@@ -36,6 +36,9 @@ let playImg;
 
 let gameStarted = false;
 
+let jumpSound;
+let hitSound;
+
 window.onload = function () {
     board = document.getElementById("board");
     board.height = boardHeight;
@@ -59,6 +62,9 @@ window.onload = function () {
 
     playImg.onload = showPlayButton;
 
+    jumpSound = new Audio("audio/s1.wav");
+    hitSound = new Audio("audio/s2.wav");
+
     document.addEventListener("keydown", moveBird);
 
     board.addEventListener("touchstart", function (e) {
@@ -74,14 +80,11 @@ window.onload = function () {
 
 function showPlayButton() {
     context.clearRect(0, 0, boardWidth, boardHeight);
-
     const imgWidth = 200;
     const imgHeight = 80;
     const x = (boardWidth - imgWidth) / 2;
     const y = (boardHeight - imgHeight) / 2;
-
     context.drawImage(playImg, x, y, imgWidth, imgHeight);
-
     context.fillStyle = "black";
     context.font = "24px Arial";
     context.textAlign = "center";
@@ -110,7 +113,11 @@ function update() {
 
     context.drawImage(birdImg, bird.x, bird.y, bird.width, bird.height);
 
-    if (bird.y > board.height) gameOver = true;
+    if (bird.y > board.height) {
+        hitSound.currentTime = 0;
+        hitSound.play();
+        gameOver = true;
+    }
 
     for (let i = 0; i < pipeArray.length; i++) {
         let pipe = pipeArray[i];
@@ -122,7 +129,11 @@ function update() {
             pipe.passed = true;
         }
 
-        if (detectCollision(bird, pipe)) gameOver = true;
+        if (detectCollision(bird, pipe)) {
+            hitSound.currentTime = 0;
+            hitSound.play();
+            gameOver = true;
+        }
     }
 
     while (pipeArray.length > 0 && pipeArray[0].x < -pipeWidth) {
@@ -163,7 +174,8 @@ function placePipes() {
 
 function jumpBird() {
     velocityY = -6;
-
+    jumpSound.currentTime = 0;
+    jumpSound.play();
     if (gameOver) {
         bird.y = birdY;
         pipeArray = [];
