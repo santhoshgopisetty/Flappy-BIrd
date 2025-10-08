@@ -173,20 +173,23 @@ function placePipes() {
 }
 
 function jumpBird() {
+    if (gameOver) 
+        return;
+
     velocityY = -6;
     jumpSound.currentTime = 0;
     jumpSound.play();
-    if (gameOver) {
-        bird.y = birdY;
-        pipeArray = [];
-        score = 0;
-        gameOver = false;
-    }
 }
 
 function moveBird(e) {
     if (e.code == "Space" || e.code == "ArrowUp" || e.code == "KeyX") {
-        jumpBird();
+        if (!gameStarted){
+            startGame();
+        } else if (gameOver) {
+            resetGame();
+        } else {
+            jumpBird();
+        }
     }
 }
 
@@ -195,4 +198,13 @@ function detectCollision(a, b) {
         a.x + a.width > b.x &&
         a.y < b.y + b.height &&
         a.y + a.height > b.y;
+}
+
+function resetGame() {
+    bird.y = birdY;
+    pipeArray = [];
+    score = 0;
+    gameOver = false;
+    velocityY = 0;
+    gameStartrd = true;
 }
